@@ -56,7 +56,7 @@ let connection;
 // Fungsi untuk memutar audio di voice channel
 async function playAudio(channel) {
     try {
-        const audioPath = path.join(__dirname, 'audio', 'relax.mp3');
+        const audioPath = path.join(__dirname, 'audio', 'hansip.mp3');
         connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
@@ -70,7 +70,7 @@ async function playAudio(channel) {
             const resource = createAudioResource(audioPath, {
                 inlineVolume: true,
             });
-            resource.volume.setVolume(0.01); // Atur volume ke 1%
+            resource.volume.setVolume(0.08); // Atur volume ke 8%
             player.play(resource);
         };
 
