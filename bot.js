@@ -27,7 +27,7 @@ const client = new Client({
 });
 
 const PREFIX = 'hs!';
-const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID;
+const LOG_CHANNEL_ID = '1099916187044941914';
 
 // Konfigurasi Express untuk menangani port
 const app = express();
