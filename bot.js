@@ -14,7 +14,7 @@ const express = require('express');
 const path = require('path');
 
 // Token Bot Discord
-const TOKEN = process.env.DISCORD_TOKEN;
+const TOKEN = process.env.TOKEN;
 
 // Konfigurasi Bot
 const client = new Client({
