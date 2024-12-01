@@ -2,7 +2,9 @@ require('dotenv').config();
 const { 
     Client, 
     GatewayIntentBits, 
-    ActivityType 
+    ActivityType,
+    SlashCommandBuilder, 
+    PermissionFlagsBits
 } = require('discord.js');
 const { 
     joinVoiceChannel, 
@@ -48,6 +50,47 @@ const statusMessages = ["⚠️ Mohon Perhatian", "👥 Bagi Seluruh Warga", "�
 const statusTypes = ['dnd', 'idle'];
 let currentStatusIndex = 0;
 let currentTypeIndex = 0;
+
+// Fitur mengirim pesan melalui bot
+client.on('interactionCreate', async (interaction) => {
+    // Pastikan hanya menangani Slash Command
+    if (!interaction.isCommand()) return;
+
+    const { commandName } = interaction;
+
+    // Periksa apakah user memiliki role dengan ID '1077457424736333844' atau admin
+    const hasPermission = interaction.memberPermissions.has(PermissionFlagsBits.Administrator) ||
+        interaction.member.roles.cache.has('1077457424736333844'); // Cek apakah pengguna memiliki role dengan ID ini
+
+    if (!hasPermission) {
+        return interaction.reply({ content: "Anda tidak memiliki izin untuk menggunakan perintah ini.", ephemeral: true });
+    }
+    
+// Fitur /say untuk mengirim pesan melalui Bot
+    if (interaction.commandName === 'say') {
+        // Mendapatkan pesan dari opsi
+        const pesan = interaction.options.getString('pesan');
+
+        // Mengirimkan pesan
+        await interaction.reply({ content: 'Pesan berhasil dikirim!', ephemeral: true });
+        await interaction.channel.send(pesan); // Pesan dikirim ke channel tempat command digunakan
+    }  
+});
+
+// Register Slash Commands
+client.on('ready', () => {
+        client.application.commands.create(
+        new SlashCommandBuilder()
+        .setName('say')
+        .setDescription('Bot akan mengirimkan pesan yang kamu ketik.')
+        .addStringOption((option) =>
+            option
+                .setName('pesan')
+                .setDescription('Ketik pesan yang akan dikirim oleh bot')
+                .setRequired(true)
+        )
+    );
+});
 
 // Untuk menyimpan status player
 let player;
