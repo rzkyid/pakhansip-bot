@@ -47,7 +47,7 @@ app.listen(PORT, () => {
 
 // Status Bot
 const statusMessages = ["⚠️ Mohon Perhatian", "👥 Bagi Seluruh Warga", "📝 Baca Peraturan Desa!"];
-const statusTypes = ['dnd', 'idle'];
+const statusTypes = ['idle'];
 let currentStatusIndex = 0;
 let currentTypeIndex = 0;
 
