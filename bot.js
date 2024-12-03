@@ -45,11 +45,66 @@ app.listen(PORT, () => {
     console.log('\x1b[36m[ SERVER ]\x1b[0m', `\x1b[32mSH : http://localhost:${PORT} ✅\x1b[0m`);
 });
 
+// Login ke Bot
+async function login() {
+    try {
+        await client.login(TOKEN);
+        console.log('\x1b[36m[ LOGIN ]\x1b[0m', `\x1b[32mLogged in as: ${client.user.tag} ✅\x1b[0m`);
+        console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[35mBot ID: ${client.user.id} \x1b[0m`);
+    } catch (error) {
+        console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
+        process.exit(1);
+    }
+}
+
 // Status Bot
 const statusMessages = ["⚠️ Mohon Perhatian", "👥 Bagi Seluruh Warga", "📝 Baca Peraturan Desa!"];
 const statusTypes = ['idle'];
 let currentStatusIndex = 0;
 let currentTypeIndex = 0;
+
+// Update Status Bot
+function updateStatus() {
+    const currentStatus = statusMessages[currentStatusIndex];
+    const currentType = statusTypes[currentTypeIndex];
+    client.user.setPresence({
+        activities: [{ name: currentStatus, type: ActivityType.Custom }],
+        status: currentType,
+    });
+    console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${currentStatus} (${currentType})`);
+    currentStatusIndex = (currentStatusIndex + 1) % statusMessages.length;
+    currentTypeIndex = (currentTypeIndex + 1) % statusTypes.length;
+}
+
+// Heartbeat untuk memeriksa aktivitas bot
+function heartbeat() {
+    setInterval(() => {
+        console.log('\x1b[35m[ HEARTBEAT ]\x1b[0m', `Bot is alive at ${new Date().toLocaleTimeString()}`);
+    }, 30000);
+}
+
+// Event Ready
+client.once('ready', () => {
+    console.log('\x1b[36m[ INFO ]\x1b[0m', `Ping: ${client.ws.ping} ms`);
+    updateStatus();
+    setInterval(updateStatus, 10000);
+    heartbeat();
+});
+
+// Register Slash Commands
+client.on('ready', () => {
+        client.application.commands.create(
+        new SlashCommandBuilder()
+        .setName('say')
+        .setDescription('Bot akan mengirimkan pesan yang kamu ketik.')
+        .addStringOption((option) =>
+            option
+                .setName('pesan')
+                .setDescription('Ketik pesan yang akan dikirim oleh bot')
+                .setRequired(true)
+        )
+    );
+});
 
 // Fitur mengirim pesan melalui bot
 client.on('interactionCreate', async (interaction) => {
@@ -75,21 +130,6 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply({ content: 'Pesan berhasil dikirim!', ephemeral: true });
         await interaction.channel.send(pesan); // Pesan dikirim ke channel tempat command digunakan
     }  
-});
-
-// Register Slash Commands
-client.on('ready', () => {
-        client.application.commands.create(
-        new SlashCommandBuilder()
-        .setName('say')
-        .setDescription('Bot akan mengirimkan pesan yang kamu ketik.')
-        .addStringOption((option) =>
-            option
-                .setName('pesan')
-                .setDescription('Ketik pesan yang akan dikirim oleh bot')
-                .setRequired(true)
-        )
-    );
 });
 
 // Untuk menyimpan status player
@@ -137,46 +177,6 @@ async function playAudio(channel) {
         console.error('Gagal memutar audio:', error);
     }
 }
-
-// Login ke Bot
-async function login() {
-    try {
-        await client.login(TOKEN);
-        console.log('\x1b[36m[ LOGIN ]\x1b[0m', `\x1b[32mLogged in as: ${client.user.tag} ✅\x1b[0m`);
-        console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[35mBot ID: ${client.user.id} \x1b[0m`);
-    } catch (error) {
-        console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
-        process.exit(1);
-    }
-}
-
-// Update Status Bot
-function updateStatus() {
-    const currentStatus = statusMessages[currentStatusIndex];
-    const currentType = statusTypes[currentTypeIndex];
-    client.user.setPresence({
-        activities: [{ name: currentStatus, type: ActivityType.Custom }],
-        status: currentType,
-    });
-    console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${currentStatus} (${currentType})`);
-    currentStatusIndex = (currentStatusIndex + 1) % statusMessages.length;
-    currentTypeIndex = (currentTypeIndex + 1) % statusTypes.length;
-}
-
-// Heartbeat untuk memeriksa aktivitas bot
-function heartbeat() {
-    setInterval(() => {
-        console.log('\x1b[35m[ HEARTBEAT ]\x1b[0m', `Bot is alive at ${new Date().toLocaleTimeString()}`);
-    }, 30000);
-}
-
-// Event Ready
-client.once('ready', () => {
-    console.log('\x1b[36m[ INFO ]\x1b[0m', `Ping: ${client.ws.ping} ms`);
-    updateStatus();
-    setInterval(updateStatus, 10000);
-    heartbeat();
-});
 
 // Event Message Create
 client.on('messageCreate', async (message) => {
