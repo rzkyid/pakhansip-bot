@@ -22,7 +22,7 @@ const client = new Client({
     ],
 });
 
-const PREFIX = 'hs!';
+const PREFIX = 'hs';
 const LOG_CHANNEL_ID = '1099916187044941914';
 
 // Konfigurasi Express untuk menangani port
@@ -126,17 +126,40 @@ async function playAudio(channel) {
     }
 }
 
-// Login ke Bot
-async function login() {
-    try {
-        await client.login(TOKEN);
-        console.log('\x1b[36m[ LOGIN ]\x1b[0m', `\x1b[32mLogged in as: ${client.user.tag} ✅\x1b[0m`);
-        console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[35mBot ID: ${client.user.id} \x1b[0m`);
-    } catch (error) {
-        console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
-        process.exit(1);
+// Event Message Create
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+
+    const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel && message.content.startsWith(PREFIX)) {
+        logChannel.send(`[LOG] ${message.author.tag} menggunakan perintah: ${message.content}`);
     }
-}
+
+    // Perintah untuk bergabung ke voice channel dan memutar audio
+    if (message.content.startsWith(`${PREFIX}join`)) {
+        const voiceChannel = message.member.voice.channel;
+
+        if (!voiceChannel) {
+            message.reply('Anda harus berada di voice channel untuk menggunakan perintah ini.');
+            return;
+        }
+
+        await playAudio(voiceChannel);
+        message.reply('Pak Hansip telah bergabung ke channel.');
+    }
+
+    // Perintah untuk keluar dari voice channel
+    if (message.content.startsWith(`${PREFIX}leave`)) {
+        if (connection) {
+            connection.destroy();
+            connection = null;
+            player = null;
+            message.reply('Pak Hansip telah keluar dari voice channel.');
+        } else {
+            message.reply('Pak Hansip tidak berada di voice channel.');
+        }
+    }
+});
 
 // Status Bot
 const statusMessages = ["⚠️ Mohon Perhatian", "👥 Bagi Seluruh Warga", "📝 Baca Peraturan Desa!"];
@@ -172,40 +195,17 @@ client.once('ready', () => {
     heartbeat();
 });
 
-// Event Message Create
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
-
-    const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel && message.content.startsWith(PREFIX)) {
-        logChannel.send(`[LOG] ${message.author.tag} menggunakan perintah: ${message.content}`);
+// Login ke Bot
+async function login() {
+    try {
+        await client.login(TOKEN);
+        console.log('\x1b[36m[ LOGIN ]\x1b[0m', `\x1b[32mLogged in as: ${client.user.tag} ✅\x1b[0m`);
+        console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[35mBot ID: ${client.user.id} \x1b[0m`);
+    } catch (error) {
+        console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
+        process.exit(1);
     }
-
-    // Perintah untuk bergabung ke voice channel dan memutar audio
-    if (message.content.startsWith(`${PREFIX}join`)) {
-        const voiceChannel = message.member.voice.channel;
-
-        if (!voiceChannel) {
-            message.reply('Anda harus berada di voice channel untuk menggunakan perintah ini.');
-            return;
-        }
-
-        await playAudio(voiceChannel);
-        message.reply('Pak Hansip telah bergabung ke channel.');
-    }
-
-    // Perintah untuk keluar dari voice channel
-    if (message.content.startsWith(`${PREFIX}leave`)) {
-        if (connection) {
-            connection.destroy();
-            connection = null;
-            player = null;
-            message.reply('Pak Hansip telah keluar dari voice channel.');
-        } else {
-            message.reply('Pak Hansip tidak berada di voice channel.');
-        }
-    }
-});
+}
 
 // Jalankan bot
 login();
