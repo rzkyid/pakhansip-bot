@@ -54,6 +54,7 @@ client.on('ready', () => {
     );
 });
 
+/*
 // Fitur mengirim pesan melalui bot
 client.on('interactionCreate', async (interaction) => {
     // Pastikan hanya menangani Slash Command
@@ -79,6 +80,7 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.channel.send(pesan); // Pesan dikirim ke channel tempat command digunakan
     }  
 });
+*/
 
 // Untuk menyimpan status player
 let player;
