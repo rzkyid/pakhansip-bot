@@ -39,6 +39,7 @@ app.listen(PORT, () => {
     console.log('\x1b[36m[ SERVER ]\x1b[0m', `\x1b[32mSH : http://localhost:${PORT} ✅\x1b[0m`);
 });
 
+/*/*
 // Register Slash Commands
 client.on('ready', () => {
         client.application.commands.create(
@@ -54,7 +55,6 @@ client.on('ready', () => {
     );
 });
 
-/*
 // Fitur mengirim pesan melalui bot
 client.on('interactionCreate', async (interaction) => {
     // Pastikan hanya menangani Slash Command
