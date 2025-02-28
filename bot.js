@@ -106,6 +106,73 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+//Auto timeout mention spam
+const TIMEOUT_DURATION = 60 * 60 * 1000; // 1 jam dalam milidetik
+const SPAM_LIMIT = 3; // Jumlah mention sebelum dianggap spam
+const TIME_WINDOW = 5 * 60 * 1000; // 5 menit dalam milidetik
+
+// Penyimpanan sementara untuk melacak mention role per user
+const mentionTracker = new Collection();
+
+client.on('messageCreate', async (message) => {
+    // Pastikan pesan bukan dari bot untuk mencegah loop
+    if (message.author.bot) return;
+
+    // Cek apakah pesan mengandung mention role
+    if (message.mentions.roles.size > 0) {
+        const userId = message.author.id;
+        const now = Date.now();
+
+        // Jika user belum ada di tracker, buat entri baru
+        if (!mentionTracker.has(userId)) {
+            mentionTracker.set(userId, []);
+        }
+
+        // Tambahkan timestamp pesan ke dalam tracker user
+        const timestamps = mentionTracker.get(userId);
+        timestamps.push(now);
+
+        // Hapus mention yang sudah lebih dari TIME_WINDOW (5 menit)
+        mentionTracker.set(userId, timestamps.filter(ts => now - ts < TIME_WINDOW));
+
+        // Jika jumlah mention dalam 5 menit melebihi batas, timeout user
+        if (mentionTracker.get(userId).length >= SPAM_LIMIT) {
+            try {
+                // Ambil member dari guild
+                const member = await message.guild.members.fetch(userId);
+
+                // Berikan timeout (mute sementara)
+                await member.timeout(TIMEOUT_DURATION, "Spam mention role");
+
+                // Buat embed DM peringatan
+                const dmEmbed = new EmbedBuilder()
+                    .setColor('#FF0000')
+                    .setTitle('🚫 Dilarang SPAM Mention Role!)'
+                    .setDescription('Anda telah diberikan timeout selama **1 jam** karena melakukan spam mention role sebanyak **3x dalam 5 menit terakhir**.\n\n📄 Silahkan baca <#1052123681578557500>')
+                    .setFooter({ text: 'Gang Desa Moderation' })
+                    .setTimestamp();
+
+                // Kirim DM ke user
+                await member.send({ embeds: [dmEmbed] }).catch(() => {
+                    console.log(`Gagal mengirim DM ke ${member.user.tag}`);
+                });
+
+                // Kirim log ke channel log
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                if (logChannel) {
+                    logChannel.send(`[LOG] 🚨 **${member.user.tag}** telah diberikan timeout selama 1 jam karena spam mention role di <#${message.channel.id}>.`);
+                }
+
+                // Hapus data dari tracker setelah timeout diberikan
+                mentionTracker.delete(userId);
+            } catch (error) {
+                console.error(`Gagal memberikan timeout: ${error.message}`);
+            }
+        }
+    }
+});
+
+// Auto delete mention everyone
 client.on('messageCreate', async (message) => {
     // Pastikan pesan bukan dari bot untuk mencegah loop
     if (message.author.bot) return;
