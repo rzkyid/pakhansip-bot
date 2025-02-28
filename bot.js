@@ -173,10 +173,19 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-// Auto delete mention everyone
+// Auto delete mention everyone (kecuali role tertentu)
 client.on('messageCreate', async (message) => {
     // Pastikan pesan bukan dari bot untuk mencegah loop
     if (message.author.bot) return;
+
+    // Ambil informasi member
+    const member = await message.guild.members.fetch(message.author.id);
+
+    // Cek apakah user memiliki role yang diperbolehkan
+    const ALLOWED_ROLE_ID = '1052120689156558898';
+    if (member.roles.cache.has(ALLOWED_ROLE_ID)) {
+        return; // Jika user memiliki role ini, biarkan mention @everyone
+    }
 
     // Cek apakah pesan mengandung mention @everyone
     if (message.mentions.everyone) {
