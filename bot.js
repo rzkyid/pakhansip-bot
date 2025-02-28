@@ -97,12 +97,33 @@ client.on('messageCreate', async (message) => {
                 // Kirim log ke channel log
                 const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
                 if (logChannel) {
-                    logChannel.send(`🗑️ Pesan dari **Tatsu** dihapus di <#${message.channel.id}>.`);
+                    logChannel.send(`[LOG] 🗑️ Pesan dari **Tatsu** dihapus di <#${message.channel.id}>.`);
                 }
             } catch (error) {
                 console.error(`Gagal menghapus pesan dari Tatsu: ${error.message}`);
             }
         }, 10000); // 10 detik
+    }
+});
+
+client.on('messageCreate', async (message) => {
+    // Pastikan pesan bukan dari bot untuk mencegah loop
+    if (message.author.bot) return;
+
+    // Cek apakah pesan mengandung mention @everyone
+    if (message.mentions.everyone) {
+        try {
+            await message.delete();
+            console.log(`Pesan mention @everyone dihapus di #${message.channel.name}`);
+
+            // Kirim log ke channel log
+            const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+            if (logChannel) {
+                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention @everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
+            }
+        } catch (error) {
+            console.error(`Gagal menghapus mention @everyone: ${error.message}`);
+        }
     }
 });
 
