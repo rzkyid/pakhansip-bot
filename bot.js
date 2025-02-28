@@ -82,6 +82,30 @@ client.on('interactionCreate', async (interaction) => {
 });
 */
 
+// Auto delete message Bot Tatsu
+const EXCLUDED_CHANNEL_ID = '1343774861218156665';
+const TARGET_BOT_ID = '172002275412279296'; // User ID Tatsu
+
+client.on('messageCreate', async (message) => {
+    // Pastikan pesan berasal dari bot dengan ID Tatsu dan bukan di channel yang dikecualikan
+    if (message.author.id === TARGET_BOT_ID && message.channel.id !== EXCLUDED_CHANNEL_ID) {
+        setTimeout(async () => {
+            try {
+                await message.delete();
+                console.log(`Pesan dari Tatsu dihapus di #${message.channel.name}`);
+
+                // Kirim log ke channel log
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                if (logChannel) {
+                    logChannel.send(`🗑️ Pesan dari **Tatsu** dihapus di <#${message.channel.id}>.`);
+                }
+            } catch (error) {
+                console.error(`Gagal menghapus pesan dari Tatsu: ${error.message}`);
+            }
+        }, 10000); // 10 detik
+    }
+});
+
 // Untuk menyimpan status player
 let player;
 let connection;
