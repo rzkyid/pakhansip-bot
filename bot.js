@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { 
-    Client, GatewayIntentBits, ActivityType, SlashCommandBuilder, PermissionFlagsBits 
+    Client, GatewayIntentBits, ActivityType, SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, EmbedBuilder, Collection 
     } = require('discord.js');
 const { 
     joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus 
@@ -19,6 +19,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
     ],
 });
 
