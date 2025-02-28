@@ -147,7 +147,7 @@ client.on('messageCreate', async (message) => {
                 // Buat embed DM peringatan
                 const dmEmbed = new EmbedBuilder()
                     .setColor('#FF0000')
-                    .setTitle('🚫 Dilarang SPAM Mention Role!)'
+                    .setTitle('🚫 Dilarang SPAM Mention Role!')
                     .setDescription('Anda telah diberikan timeout selama **1 jam** karena melakukan spam mention role sebanyak **3x dalam 5 menit terakhir**.\n\nSilahkan baca <#1052123681578557500>')
                     .setFooter({ text: 'Gang Desa Moderation' })
                     .setTimestamp();
