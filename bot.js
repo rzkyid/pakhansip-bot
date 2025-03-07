@@ -160,10 +160,18 @@ client.on('messageCreate', async (message) => {
                 });
 
                 // Kirim log ke channel log
-                // Kirim log ke channel log
-                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                const logChannel = await client.channels.fetch(CHANNEL_HUKUMAN_ID).catch(() => null);
                 if (logChannel) {
-                    logChannel.send(`[LOG] 🚨 **${member.user.tag}** telah diberikan timeout selama 1 jam karena spam mention role di <#${message.channel.id}>.`);
+                    const embed = new EmbedBuilder()
+                        .setColor('#FF0000') // Warna merah
+                        .setTitle("🚫 SPAM Mention Role")
+                        .setDescription(`**${member.user.tag}** telah diberikan timeout selama 1 jam karena spam mention role di <#${message.channel.id}>.`)
+                        .setFooter({ text: 'Gang Desa Auto Moderation' })
+                        .setTimestamp();
+                
+                    logChannel.send({ embeds: [embed] }).catch(err => console.error("Gagal mengirim log ke channel:", err));
+                } else {
+                    console.error(`Gagal menemukan channel log dengan ID: ${CHANNEL_HUKUMAN_ID}`);
                 }
 
                 // Hapus data dari tracker setelah timeout diberikan
