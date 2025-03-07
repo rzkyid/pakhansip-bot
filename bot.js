@@ -159,9 +159,17 @@ client.on('messageCreate', async (message) => {
                 });
 
                 // Kirim log ke channel log
-                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                const CHANNEL_HUKUMAN_ID = '1286643676122185759';
+                const logChannel = client.channels.cache.get(CHANNEL_HUKUMAN_ID);
                 if (logChannel) {
-                    logChannel.send(`[LOG] 🚨 **${member.user.tag}** telah diberikan timeout selama 1 jam karena spam mention role di <#${message.channel.id}>.`);
+                    const embed = new EmbedBuilder()
+                        .setColor('#FF0000') // Warna merah
+                        .setTitle("🚫 SPAM Mention Role")
+                        .setDescription(`**${member.user.tag}** telah diberikan timeout selama 1 jam karena spam mention role di <#${message.channel.id}>.`)
+                        .setFooter({ text: 'Gang Desa Auto Moderation' })
+                        .setTimestamp();
+                
+                    logChannel.send({ embeds: [embed] });
                 }
 
                 // Hapus data dari tracker setelah timeout diberikan
@@ -330,6 +338,3 @@ async function login() {
         process.exit(1);
     }
 }
-
-// Jalankan bot
-login();
