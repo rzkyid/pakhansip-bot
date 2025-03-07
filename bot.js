@@ -25,6 +25,7 @@ const client = new Client({
 
 const PREFIX = 'hs';
 const LOG_CHANNEL_ID = '1099916187044941914';
+const CHANNEL_HUKUMAN_ID = '1286643676122185759';
 
 // Konfigurasi Express untuk menangani port
 const app = express();
@@ -159,7 +160,6 @@ client.on('messageCreate', async (message) => {
                 });
 
                 // Kirim log ke channel log
-                const CHANNEL_HUKUMAN_ID = '1286643676122185759';
                 const logChannel = client.channels.cache.get(CHANNEL_HUKUMAN_ID);
                 if (logChannel) {
                     const embed = new EmbedBuilder()
