@@ -160,7 +160,7 @@ client.on('messageCreate', async (message) => {
                 });
 
                 // Kirim log ke channel log
-                const logChannel = client.channels.cache.get(CHANNEL_HUKUMAN_ID);
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
                 if (logChannel) {
                     const embed = new EmbedBuilder()
                         .setColor('#FF0000') // Warna merah
