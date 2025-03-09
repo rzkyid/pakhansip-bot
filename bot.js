@@ -104,7 +104,7 @@ client.on('messageCreate', async (message) => {
             } catch (error) {
                 console.error(`Gagal menghapus pesan dari Tatsu: ${error.message}`);
             }
-        }, 10000); // 10 detik
+        }, 3000); // 3 detik
     }
 });
 
