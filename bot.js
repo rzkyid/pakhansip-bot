@@ -186,8 +186,7 @@ client.on('messageCreate', async (message) => {
 // Auto delete mention everyone (kecuali role tertentu)
 client.on('messageCreate', async (message) => {
     // Pastikan pesan bukan dari bot untuk mencegah loop
-    if (message.author.bot) return;
-
+    
     // Ambil informasi member
     const member = await message.guild.members.fetch(message.author.id);
 
@@ -206,10 +205,10 @@ client.on('messageCreate', async (message) => {
             // Kirim log ke channel log
             const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) {
-                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention @everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
+                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
             }
         } catch (error) {
-            console.error(`Gagal menghapus mention @everyone: ${error.message}`);
+            console.error(`Gagal menghapus mention everyone: ${error.message}`);
         }
     }
 });
