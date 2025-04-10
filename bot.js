@@ -324,6 +324,26 @@ client.once('ready', () => {
     updateStatus();
     setInterval(updateStatus, 10000);
     heartbeat();
+    try {
+        const vcid = "1307965818654560368";
+        if (!client.channels.cache.get(vcid)) {
+            console.error(`Channel dengan ID "${vcid}"" tidak ditemukan.`);
+        } else {
+            client.channels.fetch(vcid).then((channel) => {
+                const connection = joinVoiceChannel({
+                    channelId: channel.id,
+                    guildId: channel.guild.id,
+                    adapterCreator: channel.guild.voiceAdapterCreator,
+                });
+
+                console.log(
+                    `Bot ${client.user.tag} sudah join ke channel ${channel.name}!`,
+                );
+            });
+        }
+    } catch (error) {
+        console.error("Terjadi masalah saat mencoba gabung channel");
+    }
 });
 
 // Login ke Bot
