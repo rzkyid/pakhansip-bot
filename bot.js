@@ -290,6 +290,35 @@ client.on('messageCreate', async (message) => {
             message.reply('Pak Hansip tidak berada di voice channel.');
         }
     }
+    if (message.content.startsWith(`${PREFIX}leave`)) {
+        if (connection) {
+            connection.destroy();
+            connection = null;
+            player = null;
+            message.reply('Pak Hansip telah keluar dari voice channel.');
+        } else {
+            message.reply('Pak Hansip tidak berada di voice channel.');
+        }
+    }
+    if (message.content.startsWith(`${PREFIX}kerja`)) {
+        try {
+            const vcid = "1307965818654560368" ;
+
+            const connection = joinVoiceChannel({
+                channelId: vcid,
+                guildId: interaction.guild.id,
+                adapterCreator: interaction.guild.voiceAdapterCreator,
+            });
+
+            interaction.reply("Siap laksanakan!");
+            connection.on(VoiceConnectionStatus.Ready, () => {
+                console.log("Kembali ke voice Kantor Pejabat");
+                console.log(interaction.guild);
+            });
+        } catch (error) {
+            console.error("Terjadi masalah saat mencoba kembali ke voice Kantor Pejabat");
+        }
+    }
 });
 
 // Status Bot
@@ -337,7 +366,7 @@ client.once('ready', () => {
                 });
 
                 console.log(
-                    `Bot ${client.user.tag} sudah join ke channel ${channel.name}!`,
+                    '\x1b[36m[ INFO ]\x1b[0m', `Bot ${client.user.tag} sudah join ke channel ${channel.name}!`,
                 );
             });
         }
