@@ -183,27 +183,31 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+// Auto delete mention everyone (kecuali role tertentu)
 client.on('messageCreate', async (message) => {
+  
+    // Ambil informasi member
+    const member = await message.guild.members.fetch(message.author.id);
+
+    // Cek apakah user memiliki role yang diperbolehkan
+    const ALLOWED_ROLE_ID = '1358092061798039809';
+    if (member.roles.cache.has(ALLOWED_ROLE_ID)) {
+        return; // Jika user memiliki role ini, biarkan mention @everyone
+    }
+
     // Cek apakah pesan mengandung mention everyone
     if (message.mentions.everyone) {
-        const member = await message.guild.members.fetch(message.author.id);
-        const ALLOWED_ROLE_ID = '1358092061798039809';
-
-        // Jika user punya role yang diizinkan, biarkan
-        if (member.roles.cache.has(ALLOWED_ROLE_ID)) return;
-
         try {
-            // Blokir isi pesan
-            await message.suppressEmbeds(true); // Sembunyikan embed jika ada
-            await message.edit('[❌ Pesan diblokir karena mengandung everyone tanpa izin]');
+            await message.delete();
+            console.log(Pesan mention everyone dihapus di #${message.channel.name});
 
-            // Kirim log
+            // Kirim log ke channel log
             const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) {
-                logChannel.send(`[🚫 BLOKIR] **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>.`);
+                logChannel.send([LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.);
             }
-        } catch (err) {
-            console.error(`Gagal memblokir pesan: ${err.message}`);
+        } catch (error) {
+            console.error(Gagal menghapus mention everyone: ${error.message});
         }
     }
 });
