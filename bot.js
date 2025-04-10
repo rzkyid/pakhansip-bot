@@ -185,30 +185,29 @@ client.on('messageCreate', async (message) => {
 
 // Auto delete mention everyone (kecuali role tertentu)
 client.on('messageCreate', async (message) => {
-  
-    // Ambil informasi member
-    const member = await message.guild.members.fetch(message.author.id);
+    try {
+        // Ambil informasi member
+        const member = await message.guild.members.fetch(message.author.id);
 
-    // Cek apakah user memiliki role yang diperbolehkan
-    const ALLOWED_ROLE_ID = '1358092061798039809';
-    if (member.roles.cache.has(ALLOWED_ROLE_ID)) {
-        return; // Jika user memiliki role ini, biarkan mention @everyone
-    }
+        // Cek apakah user memiliki role yang diperbolehkan
+        const ALLOWED_ROLE_ID = '1358092061798039809';
+        if (member.roles.cache.has(ALLOWED_ROLE_ID)) {
+            return; // Jika user memiliki role ini, biarkan mention @everyone
+        }
 
-    // Cek apakah pesan mengandung mention everyone
-    if (message.mentions.everyone) {
-        try {
+        // Cek apakah pesan mengandung mention everyone
+        if (message.mentions.everyone) {
             await message.delete();
-            console.log(Pesan mention everyone dihapus di #${message.channel.name});
+            console.log(`Pesan mention everyone dihapus di #${message.channel.name}`);
 
             // Kirim log ke channel log
             const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) {
-                logChannel.send([LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.);
+                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
             }
-        } catch (error) {
-            console.error(Gagal menghapus mention everyone: ${error.message});
         }
+    } catch (error) {
+        console.error(`Gagal menghapus mention everyone: ${error.message}`);
     }
 });
 
