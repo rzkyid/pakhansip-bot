@@ -3,7 +3,7 @@ const {
     Client, GatewayIntentBits, ActivityType, SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, EmbedBuilder, Collection 
     } = require('discord.js');
 const { 
-    joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus 
+    joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, VoiceConnectionStatus
     } = require('@discordjs/voice');
 
 const express = require('express');
@@ -301,24 +301,30 @@ client.on('messageCreate', async (message) => {
         }
     }
     if (message.content.startsWith(`${PREFIX}kerja`)) {
-        try {
-            const vcid = "1307965818654560368" ;
+    try {
+        const vcid = "1307965818654560368";
 
-            const connection = joinVoiceChannel({
-                channelId: vcid,
-                guildId: interaction.guild.id,
-                adapterCreator: interaction.guild.voiceAdapterCreator,
-            });
-
-            interaction.reply("Siap laksanakan!");
-            connection.on(VoiceConnectionStatus.Ready, () => {
-                console.log("Kembali ke voice Kantor Pejabat");
-                console.log(interaction.guild);
-            });
-        } catch (error) {
-            console.error("Terjadi masalah saat mencoba kembali ke voice Kantor Pejabat");
+        const voiceChannel = message.guild.channels.cache.get(vcid);
+        if (!voiceChannel || voiceChannel.type !== 2) {
+            return message.reply("Channel voice tidak ditemukan!");
         }
+
+        const connection = joinVoiceChannel({
+            channelId: vcid,
+            guildId: message.guild.id,
+            adapterCreator: message.guild.voiceAdapterCreator,
+        });
+
+        message.reply("Siap laksanakan!");
+
+        connection.on(VoiceConnectionStatus.Ready, () => {
+            console.log("Kembali ke voice Kantor Pejabat");
+        });
+
+    } catch (error) {
+        console.error("Terjadi masalah saat mencoba kembali ke voice Kantor Pejabat:", error);
     }
+  }
 });
 
 // Status Bot
