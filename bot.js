@@ -315,7 +315,7 @@ client.on('messageCreate', async (message) => {
             adapterCreator: message.guild.voiceAdapterCreator,
         });
 
-        message.reply("Siap laksanakan!");
+        message.reply("Siap laksanakan! Saya akan segera ke Kantor Pejabat");
 
         connection.on(VoiceConnectionStatus.Ready, () => {
             console.log("Kembali ke voice Kantor Pejabat");
