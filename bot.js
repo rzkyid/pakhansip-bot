@@ -203,7 +203,7 @@ client.on('messageCreate', async (message) => {
             // Kirim log ke channel log
             const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) {
-                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
+                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention @everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
             }
         }
     } catch (error) {
@@ -280,16 +280,6 @@ client.on('messageCreate', async (message) => {
     }
 
     // Perintah untuk keluar dari voice channel
-    if (message.content.startsWith(`${PREFIX}leave`)) {
-        if (connection) {
-            connection.destroy();
-            connection = null;
-            player = null;
-            message.reply('Pak Hansip telah keluar dari voice channel.');
-        } else {
-            message.reply('Pak Hansip tidak berada di voice channel.');
-        }
-    }
     if (message.content.startsWith(`${PREFIX}leave`)) {
         if (connection) {
             connection.destroy();
