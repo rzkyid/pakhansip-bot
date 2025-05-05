@@ -94,15 +94,12 @@ client.on('messageCreate', async (message) => {
         setTimeout(async () => {
             try {
                 await message.delete();
-                console.log(`Pesan dari Tatsu dihapus di #${message.channel.name}`);
 
-                // Kirim log ke channel log
-                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
-                if (logChannel) {
-                    logChannel.send(`[LOG] 🗑️ Pesan dari **Tatsu** dihapus di <#${message.channel.id}>.`);
-                }
+                // Log ke terminal
+                console.log('\x1b[33m[ AUTO DELETE ]\x1b[0m', `\x1b[36mPesan dari Tatsu dihapus di #${message.channel.name} (${message.channel.id}) 🗑️\x1b[0m`);
+
             } catch (error) {
-                console.error(`Gagal menghapus pesan dari Tatsu: ${error.message}`);
+                console.error('\x1b[31m[ ERROR ]\x1b[0m', `Gagal menghapus pesan dari Tatsu: ${error.message}`);
             }
         }, 3000); // 3 detik
     }
@@ -203,7 +200,7 @@ client.on('messageCreate', async (message) => {
             // Kirim log ke channel log
             const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) {
-                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention @everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
+                logChannel.send(`[LOG] 🚨 **${message.author.tag}** mencoba mention everyone di <#${message.channel.id}>, pesannya telah dihapus.`);
             }
         }
     } catch (error) {
@@ -218,7 +215,7 @@ let connection;
 // Fungsi untuk memutar audio di voice channel
 async function playAudio(channel) {
     try {
-        const audioPath = path.join(__dirname, 'audio', 'sirine2.mp3');
+        const audioPath = path.join(__dirname, 'audio', 'sirine.mp3');
         connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
@@ -331,7 +328,7 @@ function updateStatus() {
         activities: [{ name: currentStatus, type: ActivityType.Custom }],
         status: currentType,
     });
-    console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${currentStatus} (${currentType})`);
+ //   console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${currentStatus} (${currentType})`);
     currentStatusIndex = (currentStatusIndex + 1) % statusMessages.length;
     currentTypeIndex = (currentTypeIndex + 1) % statusTypes.length;
 }
@@ -340,7 +337,7 @@ function updateStatus() {
 function heartbeat() {
     setInterval(() => {
         console.log('\x1b[35m[ HEARTBEAT ]\x1b[0m', `Bot is alive at ${new Date().toLocaleTimeString()}`);
-    }, 30000);
+    }, 100000);
 }
 
 // Event Ready
@@ -348,7 +345,7 @@ client.once('ready', () => {
     console.log('\x1b[36m[ INFO ]\x1b[0m', `Ping: ${client.ws.ping} ms`);
     updateStatus();
     setInterval(updateStatus, 10000);
-    heartbeat();
+//    heartbeat();
     try {
         const vcid = "1307965818654560368";
         if (!client.channels.cache.get(vcid)) {
@@ -373,14 +370,28 @@ client.once('ready', () => {
 
 // Login ke Bot
 async function login() {
-    try {
-        await client.login(TOKEN);
-        console.log('\x1b[36m[ LOGIN ]\x1b[0m', `\x1b[32mLogged in as: ${client.user.tag} ✅\x1b[0m`);
-        console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[35mBot ID: ${client.user.id} \x1b[0m`);
-    } catch (error) {
-        console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
-        process.exit(1);
-    }
+  try {
+    await client.login(TOKEN);
+
+    // === WARNA TERMINAL ===
+    const cyan = '\x1b[36m';
+    const green = '\x1b[32m';
+    const magenta = '\x1b[35m';
+    const blue = '\x1b[34m';
+    const yellow = '\x1b[33m';
+    const reset = '\x1b[0m';
+    const bold = '\x1b[1m';
+
+    console.log(`${cyan}[ LOGIN ]${reset}  ${green}Bot berhasil masuk sebagai ${bold}${client.user.tag} ✅${reset}`);
+    console.log(`${cyan}[ INFO  ]${reset}  ${magenta}Bot ID: ${client.user.id}${reset}`);
+    console.log(`${cyan}[ GUILD ]${reset}  ${blue}Terhubung ke ${client.guilds.cache.size} server${client.guilds.cache.size > 1 ? 's' : ''} 💬${reset}`);
+    console.log(`${cyan}[ STATUS ]${reset} ${yellow}Menunggu perintah warga... ✨${reset}`);
+    console.log(`${cyan}[ GANG DESA BOT: PAK HANSIP AKTIF ]${reset}\n`);
+    
+  } catch (error) {
+    console.error('\x1b[31m[ ERROR ]\x1b[0m', 'Failed to log in:', error);
+    process.exit(1);
+  }
 }
 
 login();
